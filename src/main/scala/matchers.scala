@@ -116,3 +116,112 @@ private[specs2] trait XorBeHaveMatchers { outer: XorBaseMatchers =>
   }
 }
 
+private[specs2] trait ValidatedBaseMatchers {
+  import cats.data.Validated
+  def beValid[T](t: => T) =
+    new Matcher[Validated[_, T]] {
+      def apply[S <: Validated[_, T]](value: Expectable[S]) = {
+        val expected = t
+        result(
+          value.value == Validated.Valid(t),
+          s"${value.description} is Right with value ${q(expected)}",
+          s"${value.description} is not Right with value ${q(expected)}",
+          value
+        )
+      }
+    }
+
+  def beValid[T] = new Matcher[Validated[_, T]] {
+    def apply[S <: Validated[_, T]](value: Expectable[S]) = {
+      result(
+        value.value.isValid,
+        s"${value.description} is Right",
+        s"${value.description} is not Right",
+        value
+      )
+    }
+
+    def like(f: PartialFunction[T, MatchResult[_]]) = this and partialMatcher(f)
+
+    private def partialMatcher(f: PartialFunction[T, MatchResult[_]]) = new Matcher[Validated[_, T]] {
+      def apply[S <: Validated[_, T]](value: Expectable[S]) = {
+        val res: Result = value.value match {
+          case Validated.Valid(t) if f.isDefinedAt(t) => f(t).toResult
+          case Validated.Valid(t) if !f.isDefinedAt(t) => Failure("function undefined")
+          case other => Failure("no match")
+        }
+        result(
+          res.isSuccess,
+          value.description + " is Right[T] and " + res.message,
+          value.description + " is Right[T] but " + res.message,
+          value
+        )
+      }
+    }
+
+  }
+
+  def beInvalid[T](t: => T) =
+    new Matcher[Validated[T, _]] {
+      def apply[S <: Validated[T, _]](value: Expectable[S]) = {
+        val expected = t
+        result(
+          value.value == Validated.Invalid(t),
+          s"${value.description} is Left with value ${q(expected)}",
+          s"${value.description} is not Left with value ${q(expected)}",
+          value
+        )
+      }
+    }
+
+  def beInvalid[T] = new Matcher[Validated[T, _]] {
+    def apply[S <: Validated[T, _]](value: Expectable[S]) = {
+      result(
+        value.value.isInvalid,
+        s"${value.description} is Left",
+        s"${value.description} is not Left",
+        value
+      )
+    }
+
+    def like(f: PartialFunction[T, MatchResult[_]]) = this and partialMatcher(f)
+
+    private def partialMatcher(f: PartialFunction[T, MatchResult[_]]) = new Matcher[Validated[T, _]] {
+      def apply[S <: Validated[T, _]](value: Expectable[S]) = {
+        val res: Result = value.value match {
+          case Validated.Invalid(t) if f.isDefinedAt(t) => f(t).toResult
+          case Validated.Invalid(t) if !f.isDefinedAt(t) => Failure("function undefined")
+          case other => Failure("no match")
+        }
+        result(
+          res.isSuccess,
+          value.description + " is Left and " + res.message,
+          value.description + " is Left but " + res.message,
+          value
+        )
+      }
+    }
+  }
+
+}
+
+private[specs2] trait ValidatedBeHaveMatchers { outer: ValidatedBaseMatchers =>
+
+  import cats.data.Validated
+
+  implicit def toValidatedResultMatcher[F, S](result: MatchResult[Validated[F, S]]) =
+    new ValidatedResultMatcher(result)
+
+  class ValidatedResultMatcher[F, S](result: MatchResult[Validated[F, S]]) {
+    def invalid(f: => F) = result(outer beInvalid f)
+    def beInvalid(f: => F) = result(outer beInvalid f)
+    def valid(s: => S) = result(outer beValid s)
+    def beValid(s: => S) = result(outer beValid s)
+
+    def invalid = result(outer.beInvalid)
+    def beInvalid = result(outer.beInvalid)
+    def valid = result(outer.beValid)
+    def beValid = result(outer.beValid)
+  }
+}
+
