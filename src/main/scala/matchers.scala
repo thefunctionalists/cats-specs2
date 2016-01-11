@@ -19,8 +19,8 @@ private[specs2] trait XorBaseMatchers {
         val expected = t
         result(
           value.value == Xor.Right(t),
-          s"${value.description} is Right with value ${q(expected)}",
-          s"${value.description} is not Right with value ${q(expected)}",
+          s"${value.description} is Right[T] with value ${q(expected)}",
+          s"${value.description} is not Right[T] with value ${q(expected)}",
           value
         )
       }
@@ -31,8 +31,8 @@ private[specs2] trait XorBaseMatchers {
       def apply[S <: Xor[_, T]](value: Expectable[S]) = {
         result(
           value.value.isRight,
-          s"${value.description} is Right",
-          s"${value.description} is not Right",
+          s"${value.description} is Right[T]",
+          s"${value.description} is not Right[T]",
           value
         )
       }
@@ -62,8 +62,8 @@ private[specs2] trait XorBaseMatchers {
         val expected = t
         result(
           value.value == Xor.Left(t),
-          s"${value.description} is Left with value ${q(expected)}",
-          s"${value.description} is not Left with value ${q(expected)}",
+          s"${value.description} is Left[T] with value ${q(expected)}",
+          s"${value.description} is not Left[T] with value ${q(expected)}",
           value
         )
       }
@@ -73,8 +73,8 @@ private[specs2] trait XorBaseMatchers {
     def apply[S <: Xor[T, _]](value: Expectable[S]) = {
       result(
         value.value.isLeft,
-        s"${value.description} is Left",
-        s"${value.description} is not Left",
+        s"${value.description} is Left[T]",
+        s"${value.description} is not Left[T]",
         value
       )
     }
@@ -90,8 +90,8 @@ private[specs2] trait XorBaseMatchers {
         }
         result(
           res.isSuccess,
-          s"${value.description} is Left and ${res.message}",
-          s"${value.description} is Left but  ${res.message}",
+          s"${value.description} is Left[T] and ${res.message}",
+          s"${value.description} is Left[T] but  ${res.message}",
           value
         )
       }
@@ -126,8 +126,8 @@ private[specs2] trait ValidatedBaseMatchers {
         val expected = t
         result(
           value.value == Validated.Valid(t),
-          s"${value.description} is Right with value ${q(expected)}",
-          s"${value.description} is not Right with value ${q(expected)}",
+          s"${value.description} is Valid[T] with value ${q(expected)}",
+          s"${value.description} is not Valid[T] with value ${q(expected)}",
           value
         )
       }
@@ -137,8 +137,8 @@ private[specs2] trait ValidatedBaseMatchers {
     def apply[S <: Validated[_, T]](value: Expectable[S]) = {
       result(
         value.value.isValid,
-        s"${value.description} is Right",
-        s"${value.description} is not Right",
+        s"${value.description} is Valid[T]",
+        s"${value.description} is not Valid[T]",
         value
       )
     }
@@ -154,8 +154,8 @@ private[specs2] trait ValidatedBaseMatchers {
         }
         result(
           res.isSuccess,
-          value.description + " is Right[T] and " + res.message,
-          value.description + " is Right[T] but " + res.message,
+          value.description + " is Valid[T] and " + res.message,
+          value.description + " is Valid[T] but " + res.message,
           value
         )
       }
@@ -169,8 +169,8 @@ private[specs2] trait ValidatedBaseMatchers {
         val expected = t
         result(
           value.value == Validated.Invalid(t),
-          s"${value.description} is Left with value ${q(expected)}",
-          s"${value.description} is not Left with value ${q(expected)}",
+          s"${value.description} is Invalid[T] with value ${q(expected)}",
+          s"${value.description} is not Invalid[T] with value ${q(expected)}",
           value
         )
       }
@@ -180,8 +180,8 @@ private[specs2] trait ValidatedBaseMatchers {
     def apply[S <: Validated[T, _]](value: Expectable[S]) = {
       result(
         value.value.isInvalid,
-        s"${value.description} is Left",
-        s"${value.description} is not Left",
+        s"${value.description} is Invalid[T]",
+        s"${value.description} is not Invalid[T]",
         value
       )
     }
@@ -197,8 +197,8 @@ private[specs2] trait ValidatedBaseMatchers {
         }
         result(
           res.isSuccess,
-          value.description + " is Left and " + res.message,
-          value.description + " is Left but " + res.message,
+          value.description + " is Invalid[T] and " + res.message,
+          value.description + " is Invalid[T] but " + res.message,
           value
         )
       }
@@ -226,4 +226,3 @@ private[specs2] trait ValidatedBeHaveMatchers { outer: ValidatedBaseMatchers =>
     def beValid = result(outer.beValid)
   }
 }
-
