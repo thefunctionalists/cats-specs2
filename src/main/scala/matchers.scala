@@ -7,6 +7,8 @@ import org.specs2.execute.{ Failure, Result }
 trait CatsMatchers
   extends XorBaseMatchers
   with XorBeHaveMatchers
+  with ValidatedBaseMatchers
+  with ValidatedBeHaveMatchers
 
 private[specs2] trait XorBaseMatchers {
   import cats.data.Xor
